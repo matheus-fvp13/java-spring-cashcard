@@ -16,21 +16,20 @@ import java.net.URI;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CashcardApplicationTests {
 
     @Autowired
     TestRestTemplate restTemplate;
 
     @Test
-    void shouldReturnAnCashCardWhenDataIsSaved() {
+    void shouldReturnACashCardWhenDataIsSaved() {
         ResponseEntity<String> response = restTemplate
                 .withBasicAuth("sarah1", "abc123")
                 .getForEntity("/cashcards/99", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
         DocumentContext documentContext = JsonPath.parse(response.getBody());
         Number id = documentContext.read("$.id");
-        assertThat(id).isNotNull();
         assertThat(id).isEqualTo(99);
 
         Double amount = documentContext.read("$.amount");
@@ -49,7 +48,7 @@ class CashcardApplicationTests {
 
     @Test
     @DirtiesContext
-    void shouldCreatedANewCashCard() {
+    void shouldCreateANewCashCard() {
         CashCard newCashCard = new CashCard(null, 250.00, null);
         ResponseEntity<Void> createResponse = restTemplate
                 .withBasicAuth("sarah1", "abc123")
@@ -85,7 +84,7 @@ class CashcardApplicationTests {
         assertThat(ids).containsExactlyInAnyOrder(99, 100, 101);
 
         JSONArray amounts = documentContext.read("$..amount");
-        assertThat(amounts).containsExactlyInAnyOrder(123.45, 1.0, 150.00);
+        assertThat(amounts).containsExactlyInAnyOrder(123.45, 1.00, 150.00);
     }
 
     @Test
